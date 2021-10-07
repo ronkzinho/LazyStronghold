@@ -29,7 +29,7 @@ public class StrongholdGen implements Runnable {
         this.thread = new Thread(this,"Stronghold thread");
         this.config = generator.getStructuresConfig().getStronghold();
         this.strongholds = ((ChunkGeneratorInterface)generator).getStrongholds();
-        this.populationSource = ((ChunkGeneratorInterface)generator).getPopulationSource();
+        this.populationSource = ((ChunkGeneratorInterface)generator).getCustomPopulationSource();
     }
     public void start(){
         this.thread.start();

@@ -6,7 +6,7 @@ import net.minecraft.world.biome.source.BiomeSource;
 import java.util.List;
 
 public interface ChunkGeneratorInterface {
-    StrongholdGen getStrongholdGen();
+    StrongholdGen getCustomStrongholdGen();
     List<ChunkPos> getStrongholds();
-    BiomeSource getPopulationSource();
+    BiomeSource getCustomPopulationSource();
 }

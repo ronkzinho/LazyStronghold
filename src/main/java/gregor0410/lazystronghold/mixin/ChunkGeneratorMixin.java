@@ -46,7 +46,7 @@ public class ChunkGeneratorMixin implements ChunkGeneratorInterface {
         return this.genStrongholds;
     }
     @Override
-    public StrongholdGen getStrongholdGen() {
+    public StrongholdGen getCustomStrongholdGen() {
         return this.strongholdGen;
     }
 
@@ -56,5 +56,5 @@ public class ChunkGeneratorMixin implements ChunkGeneratorInterface {
     }
 
     @Override
-    public BiomeSource getPopulationSource() { return this.populationSource; }
+    public BiomeSource getCustomPopulationSource() { return this.populationSource; }
 }
