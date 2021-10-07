@@ -3,6 +3,7 @@ package gregor0410.lazystronghold.mixin;
 import gregor0410.lazystronghold.ChunkGeneratorInterface;
 import gregor0410.lazystronghold.StrongholdGen;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructuresConfig;
 import org.objectweb.asm.Opcodes;
@@ -21,15 +22,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Mixin(ChunkGenerator.class)
 public class ChunkGeneratorMixin implements ChunkGeneratorInterface {
-    @Shadow @Final private StructuresConfig config;
+    @Shadow @Final private StructuresConfig structuresConfig;
+    @Shadow @Final protected BiomeSource populationSource;
     private StrongholdGen strongholdGen = null;
-    private final List<ChunkPos> strongholds = new CopyOnWriteArrayList<>();
+    private final List<ChunkPos> genStrongholds = new CopyOnWriteArrayList<>();
 
 
-    @Inject(method="method_28509",at=@At("HEAD"),cancellable = true)
+    @Inject(method="generateStrongholdPositions",at=@At("HEAD"),cancellable = true)
     private void genStrongholds(CallbackInfo ci){
-        if(this.config.getStronghold()!=null) {
-            if (this.config.getStronghold().getCount()>0 && this.strongholdGen == null) {
+        if(this.structuresConfig.getStronghold()!=null) {
+            if (this.structuresConfig.getStronghold().getCount()>0 && this.strongholdGen == null) {
                 this.strongholdGen = new StrongholdGen((ChunkGenerator) (Object) this);
             }
         }
@@ -37,11 +39,11 @@ public class ChunkGeneratorMixin implements ChunkGeneratorInterface {
     }
     @ModifyVariable(at=@At("STORE"),ordinal = 0,method="locateStructure(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/gen/feature/StructureFeature;Lnet/minecraft/util/math/BlockPos;IZ)Lnet/minecraft/util/math/BlockPos;")
     private Iterator<ChunkPos> getStrongholdIterator(Iterator<ChunkPos> i){
-        return this.strongholds.iterator();
+        return this.genStrongholds.iterator();
     }
-    @Redirect(method="method_28507(Lnet/minecraft/util/math/ChunkPos;)Z",at=@At(value="FIELD",target="Lnet/minecraft/world/gen/chunk/ChunkGenerator;field_24749:Ljava/util/List;",opcode = Opcodes.GETFIELD))
-    private List<ChunkPos> method_28507_redirect(ChunkGenerator generator){
-        return this.strongholds;
+    @Redirect(method="isStrongholdStartingChunk",at=@At(value="FIELD",target="Lnet/minecraft/world/gen/chunk/ChunkGenerator;strongholds:Ljava/util/List;",opcode = Opcodes.GETFIELD))
+    private List<ChunkPos> isStrongholdStartingChunk_redirect(ChunkGenerator generator){
+        return this.genStrongholds;
     }
     @Override
     public StrongholdGen getStrongholdGen() {
@@ -50,6 +52,9 @@ public class ChunkGeneratorMixin implements ChunkGeneratorInterface {
 
     @Override
     public List<ChunkPos> getStrongholds() {
-        return this.strongholds;
+        return this.genStrongholds;
     }
+
+    @Override
+    public BiomeSource getPopulationSource() { return this.populationSource; }
 }

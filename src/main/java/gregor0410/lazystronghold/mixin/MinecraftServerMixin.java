@@ -20,9 +20,9 @@ import java.util.Map;
 public class MinecraftServerMixin {
     @Shadow @Final private Map<RegistryKey<World>, ServerWorld> worlds;
 
-    @Inject(method="Lnet/minecraft/server/MinecraftServer;prepareStartRegion(Lnet/minecraft/server/WorldGenerationProgressListener;)V",at=@At("TAIL"))
+    @Inject(method= "prepareStartRegion(Lnet/minecraft/server/WorldGenerationProgressListener;)V",at=@At("TAIL"))
     private void prepareStartRegion(CallbackInfo ci){
-        this.worlds.get(World.OVERWORLD).getChunkManager().getChunkGenerator().method_28507(new ChunkPos(0,0));
+        this.worlds.get(World.OVERWORLD).getChunkManager().getChunkGenerator().isStrongholdStartingChunk(new ChunkPos(0,0));
         StrongholdGen strongholdGen = ((ChunkGeneratorInterface)this.worlds.get(World.OVERWORLD).getChunkManager().getChunkGenerator()).getStrongholdGen();
         if(strongholdGen!=null) {
             strongholdGen.start();
